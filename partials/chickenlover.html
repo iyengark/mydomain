@@ -1,0 +1,14 @@
+<!-- partials/chickenlover.html -->
+<h4>{{page.title}} <span ng-style="{'font-size': '10px', 'background-color': '#E3F7F3'}">&nbsp;&nbsp;&nbsp;Editor&apos;s pick <input type="checkbox" ng-model="editorsPickOnly"/></span></h4>
+<div id="chickenLoverComments">
+	<!-- <span ng-repeat="clContent in page.content | to_trusted"> -->
+	<span ng-repeat="clContent in page.content | editorsPickFilter:editorsPickOnly">
+		<a ng-href="{{clContent.asset.assetURL}}" target="_blank"
+				tooltip="Click to read the related NYT article." 
+				tooltip-placement="top">
+			<pre ng-class="{'nyt-pick': clContent.editorsSelection}" 
+	             ng-bind-template="{{clContent.approveDate * 1000 | date : 'medium'}} --- {{clContent.commentBody}}">
+			</pre>
+		</a>
+	</span>
+</div>

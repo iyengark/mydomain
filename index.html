@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en-US" ng-app="myApp">
+    <head>
+        <title>wluz.com</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="content-language" content="en">
+        <meta name="keywords" content="wluz j2ee mobile javascript java spring" >
+        <meta name="description" content="wluz node angular javascript" >
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body class="container-fluid" ng-controller="AppController" ng-init="spaTitle='wLUZ.com';">
+              <!-- Navbar -->
+              <div class="row-fluid navbar navbar-fixed-top">
+                <div class="navbar-inner">
+                  <div class="container-fluid">
+                    <a class="brand" href="/#/page/home">wLUZ.com</a>
+                    <ul class="nav">
+                      <li ng-class="{active: slug == 'home'}"><a href="/#/page/home">Home</a></li>
+                      <li ng-class="{active: slug == 'about'}"><a href="/#/page/about">About</a></li>
+                      <li ng-class="{active: slug == 'contact'}"><a href="/#/page/contact">Contact</a></li>
+                      <li ng-class="{active: slug == 'chickenlover'}"><a href="/#/page/chickenlover">ChickenLover</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- End Navbar -->
+      <!-- Content -->
+      <div>
+        <div class="row-fluid">
+          <div class="span10">
+            <!-- Dynamic content -->
+            <div id="viewContent" ng-view>
+            </div>
+          </div>
+
+          <div data-my-link-directive data-my-link-count="{{staticLinks.length}}"></div>
+          
+        </div>
+        <div id="modal-footer"><small><a href="http://www.wluz.com/">&copy; 2015 All rights reserved {{spaTitle}}</a></small></div>
+      </div>
+      <!-- End Content -->
+      <!-- modal popup -->
+      
+      <script type="text/ng-template" id="myModalContent.html">
+          <div class="modal-header">
+              <h3>Launch in new window</h3>
+          </div>
+          <div class="modal-body">
+              <ul>
+                  <li ng-repeat="item in items">
+                      <a ng-click="selected.item = item">{{ item }}</a>
+                      Click <a ng-click="openInNewWindow(item)">here</a> 
+                  </li>
+              </ul>
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-primary" ng-click="ok()">OK</button>
+              <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+          </div>
+      </script>
+
+      <!-- end of modal popup -->
+
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script> 
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-route.min.js"></script> 
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-resource.min.js"></script> 
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-sanitize.min.js"></script> 
+      <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.7.0.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/q.js/0.9.2/q.min.js"></script>
+      <!--link rel="stylesheet" href="styles/default.css" /-->
+      <link rel="stylesheet" href="styles/bootstrap.min.css">
+
+
+
+<!-- app code starts here -->
+
+      <script type="text/javascript">
+
+angular.module('myApp', ['ngRoute', 'ngResource', 'ui.bootstrap', 'myApp.controllers', 'myApp.directives', 'myApp.filters', 'myApp.services']);
+
+angular.module('myApp')
+.config(['$httpProvider', 
+  function($httpProvider) {
+        console.log('at config time, useXDomain is '+$httpProvider.defaults.useXDomain);
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+  }
+])
+.config(['$routeProvider',  
+  function ($routeProvider) {
+      $routeProvider
+        .when('/page/contact', {templateUrl: 'partials/contact.html', controller: 'ContactController'})
+        .when('/page/chickenlover', {templateUrl: 'partials/chickenlover.html', controller: 'ChickenloverController'})
+        .when('/page/:slug', {templateUrl: 'partials/page.html', controller: 'RouteController'})
+        .otherwise({redirectTo: '/page/home'});
+  }
+]);
+
+angular.module('myApp.controllers', [])
+.controller('AppController', ['$scope', '$rootScope', '$http', '$window', '$modal', '$log',
+  function ($scope, $rootScope, $http, $window, $modal, $log) {
+      console.log('at AppController time, useXDomain '+$http.defaults.useXDomain);
+      $scope.visitor = 'Guest';
+
+    // Load static links on startup
+      $http.get('links.json').success(function (links) {
+        $rootScope.staticLinks = links.staticLinks.content;
+        //console.log('# of links: '+$rootScope.staticLinks.length)
+      });
+
+    // Load pages on startup
+      $http.get('pages.json').success(function (data) {
+        $rootScope.pages = data;
+      });
+
+      // Set the slug for menu active class
+      $scope.$on('routeLoaded', function (event, args) {
+        $scope.slug = args.slug;
+      });
+
+      $scope.items = [];
+      
+      $scope.openModal = function (strVal) {
+        $log.info(strVal+' clicked...');
+
+      var modalInstance = $modal.open({
+        templateUrl: 'myModalContent.html',
+        controller: ModalInstanceCtrl,
+        resolve: {
+          items: function () {
+            /*return $scope.items;*/
+            return strVal;
+          }
+        },
+        backdrop: 'static'
+      });
+
+      modalInstance.result.then(function (selectedItem) {
+        $scope.selected = selectedItem;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+
+    var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
+
+      $scope.items = [];
+      $scope.items.push(items);
+      $scope.selected = {
+        item: $scope.items[0]
+      };
+
+      $scope.ok = function () {
+        $modalInstance.close($scope.selected.item);
+      };
+
+      $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+      };
+
+      $scope.openInNewWindow = function(url) {
+        $scope.ok();
+        var strWindowFeatures = "location=yes,height=600,width=800,scrollbars=yes,status=yes";
+        var win = $window.open(url, "_blank", strWindowFeatures);
+      };
+
+    };
+
+  }
+])
+.controller('RouteController', ['$scope', '$rootScope', '$routeParams',
+  function ($scope, $rootScope, $routeParams) {
+    // Getting the slug from $routeParams
+      var slug = $routeParams.slug;
+      //console.log('slug='+slug);
+      $scope.page = $rootScope.pages[slug];
+      $scope.$emit('routeLoaded', {slug: slug});
+  }
+])
+.controller('ContactController', ['$scope', '$rootScope', 
+  function ($scope, $rootScope) {
+      $scope.page = $rootScope.pages['contact'];
+      $scope.$emit('routeLoaded', {slug: 'contact'});
+  }
+])
+.controller('ChickenloverController', ['$scope', '$rootScope', 'nytDataservice', 'nytRESTservice',
+  function ($scope, $rootScope, nytDataservice, nytRESTservice) {
+
+      $scope.page = $rootScope.pages['chickenlover'];
+      $scope.editorsPickOnly = false;
+      //get chickenlover comments from NYT
+      if (angular.isDefined($rootScope.chickenlover)) {
+        $scope.page.content = $rootScope.chickenlover.content;
+      } else {
+        $rootScope.chickenlover = nytDataservice.getInitialPageContent();
+        $scope.page.content = $rootScope.chickenlover.content;
+        nytDataservice.getCommentsByUserid().
+          success(function(response) {
+            $rootScope.chickenlover.content = response.comments;
+            $scope.page.content = $rootScope.chickenlover.content;
+          }).error(function(d) { 
+            $rootScope.chickenlover.content = [
+              {approveDate: (new Date()).getTime() / 1000,
+                commentBody: "NYTimes http CORS request failed."}
+            ];
+            $scope.page.content = $rootScope.chickenlover.content;
+          });
+        nytDataservice.getCommentsByUsingREST().
+          success(function(response) {
+            console.log( "NYTimes http CORS request successful." ); 
+          }).error(function(d) { 
+            console.log( "NYTimes http CORS request failed." ); 
+          });
+      }
+      //
+      //nytRESTservice.get();
+      $scope.$emit('routeLoaded', {slug: 'chickenlover'});
+  }
+]);
+
+angular.module('myApp.directives',[])
+.directive('myLinkDirective', ['$log', 
+  function($log) {
+    $log.info('Start myLinkDirective.....');
+    var ddo = {
+      restrict: 'A',
+      replace : false,
+      transclude : false,
+      templateUrl : 'partials/mylinks.html'
+    };
+    return ddo;
+  }
+]);
+
+angular.module('myApp.filters',[])
+.filter('ttDesc', [
+  function() {
+    return function(str) {
+      if(angular.isDefined(str)) {
+        return 'Click to go to '+str;
+      }
+    }
+  }
+])
+.filter('to_trusted', ['$sce', function($sce){
+    return function(text) {
+        return $sce.trustAsHtml(text);
+    };
+}])
+.filter('editorsPickFilter', ['$filter', function($filter) {
+    return function(input, editorsPickFlag) {
+      if(!editorsPickFlag) {
+        return input;
+      } else {
+        return $filter('filter')(input, {editorsSelection: editorsPickFlag});
+      } 
+    };
+}]);
+
+angular.module('myApp.services',[])
+.factory('getData', [
+  function() {
+   return ;
+  }
+])
+.factory('nytRESTservice', ['$resource', '$http',
+  function($resource, $http) {
+    console.log('at nytRESTservice, useXDomain '+$http.defaults.useXDomain);
+    //return $resource('http://api.nytimes.com/svc/community/v2/comments/user/id/7440796.json/:api-key/:sort', 
+    return $resource('http://api.nytimes.com/svc/community/v2/comments/user/id/7440796.json', 
+          {'api-key': 'c2ba46e7a840e0f482d85a49368673b8:5:69546580', sort: 'newest'});
+  }
+])
+.service('getDataService', [
+  function() {
+   return ;
+  }
+])
+.service('nytDataservice', ['$http', 
+  function($http) {
+    console.log('at nytDataservice, useXDomain '+$http.defaults.useXDomain);
+    var nytDataservice = {
+      getCommentsByUserid : function() {
+        return $http.get('comments.json');
+      },
+      getCommentsByUsingREST : function() {
+        return $http({method: 'GET', url: 'http://api.nytimes.com/svc/community/v2/comments/user/id/7440796.json?api-key=c2ba46e7a840e0f482d85a49368673b8:5:69546580&sort=newest'
+/*                       , headers: {
+                         'Content-type': 'application/x-www-form-urlencoded' 
+                        ,'Access-Control-Request-Methods': 'GET, OPTIONS'
+                       } 
+*/          });
+      },
+      getInitialPageContent : function() {
+        initialContent = {};
+        initialContent.content = [
+              {approveDate: (new Date()).getTime() / 1000,
+                commentBody: "Fetching chickenlover comments from NYTimes......"}
+        ];
+        return initialContent; 
+      }
+    };
+    return nytDataservice;
+  }
+]);
+
+
+
+
+
+      </script>
+
+
+      <style type="text/css">
+      body {
+          padding-top:60px;
+      }
+      #chickenLoverComments .nyt-pick {
+          font-size: 16px;
+          background-color: #E3F7F3;
+      }
+      #chickenLoverComments a:hover{
+          text-decoration: none;
+      }
+      </style>
+
+    </body>
+</html>

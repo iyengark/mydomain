@@ -1,0 +1,16 @@
+<div class="span2">
+	<div class="well">
+	  <h4>Links</h4>
+	  <!--p>This is static content that will stay the same between pages.</p-->
+	  <ul>
+	    <li ng-repeat="slink in staticLinks">
+	    	<span>
+	    		<!--a ng-href="{{ slink.anchorUrl }}" --> 
+	    		<a	href="#" ng-click="openModal(slink.anchorUrl)"
+	    			tooltip="{{ slink.anchorLit | ttDesc }}" 
+	    			tooltip-placement="left">{{ slink.anchorLit }}</a>
+	    	</span>
+	    </li>
+	  </ul>
+	</div>
+</div>

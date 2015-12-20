@@ -1,0 +1,17 @@
+{
+  "staticLinks": {
+    "title": "Static Links across all pages",
+    "content":[ {"anchorUrl":"http://www.pbs.org", "anchorLit":"PBS"} 
+              , {"anchorUrl":"http://news.google.com", "anchorLit":"Google News"}
+              , {"anchorUrl":"http://www.nyt.com", "anchorLit":"NYTimes"}
+              , {"anchorUrl":"http://www.wikipedia.org", "anchorLit":"Wikipedia"}
+              , {"anchorUrl":"http://angularjs.org", "anchorLit":"AngularJS"}
+              , {"anchorUrl":"http://twitter.github.io/bootstrap/", "anchorLit":"Twitter Bootstrap"}
+              , {"anchorUrl":"http://foundation.zurb.com/", "anchorLit":"Zurbo Foundation"}
+              , {"anchorUrl":"http://www.w3resource.com", "anchorLit":"W3Resource"}
+              , {"anchorUrl":"http://www.khanacademy.com/", "anchorLit":"Khan Academy"}
+              , {"anchorUrl":"http://www.codecademy.com/", "anchorLit":"Codecademy"}
+              , {"anchorUrl":"http://streamfinder.com/internet-radio-station/35157/carnaticradio/#", "anchorLit":"Carnatic Radio"}
+              , {"anchorUrl":"https://myspace.com/msmhomelessartist49926037/music/songs", "anchorLit":"Siddhi Vinayakam"} ]
+  }
+}

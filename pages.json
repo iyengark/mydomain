@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Home",
+    "content": "This is the home page on wluz dot com. Welcome..."
+  },
+  "about": {
+    "title": "About",
+    "content": "This is the about page on wluz dot com. Welcome.."
+  },
+  "contact": {
+    "title": "Contact",
+    "content": ["info@wluz.com", "or", "617.555.9999"]
+  },
+  "chickenlover": {
+    "title": "Chickenlover on NYTimes",
+    "content": ["Under Construction."]
+  }
+}
